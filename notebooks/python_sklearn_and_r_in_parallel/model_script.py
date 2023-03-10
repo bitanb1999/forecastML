@@ -37,38 +37,27 @@ def py_model_fun(data):  # A horizon-specific pd.DataFrame from forecastML::crea
 def py_predict_fun(model_dict, data):
   
   data = model_dict['scaler'].transform(data)
-  
-  data_pred = pd.DataFrame({'y_pred': model_dict['model'].predict(data)})
-  
-  return(data_pred)
+
+  return pd.DataFrame({'y_pred': model_dict['model'].predict(data)})
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 def py_model_fun_final(data, hyperparameters):
   
   horizon = int(data.horizons)
-  
+
   X = data.iloc[:, 1:]
   y = data.iloc[:, 0]
-  
+
   scaler = StandardScaler()
   X = scaler.fit_transform(X)
-  
-  if horizon == 48:
-    
-      alpha = hyperparameters[str(horizon)]['alpha']
-    
-  elif horizon == 96:
-      
-      alpha = hyperparameters[str(horizon)]['alpha']
-    
-  elif horizon == 144:
-      
-      alpha = hyperparameters[str(horizon)]['alpha']
-  
+
+  if horizon in {48, 96, 144}:
+    alpha = hyperparameters[str(horizon)]['alpha']
+
   model_lasso = linear_model.Lasso(alpha = alpha)
-  
+
   model_lasso.fit(X = X, y = y)
-  
+
   return({'model': model_lasso, 'scaler': scaler, 'horizon': horizon})
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
